@@ -1,0 +1,16 @@
+{
+  "name": "node-ci-cd-demo",
+  "version": "1.0.0",
+  "description": "Demo Node.js app for CI/CD assignment",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest",
+    "build": "node build.js",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "jest": "^29.0.0"
+  }
+}
