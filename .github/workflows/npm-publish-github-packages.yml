@@ -1,0 +1,79 @@
+name: Node.js CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+
+jobs:
+  # ------------------------
+  # CI Job (Lint + Test + Build)
+  # ------------------------
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-build
+          path: build/
+  
+  # ------------------------
+  # Deploy to QA (dev branch)
+  # ------------------------
+  deploy-qa:
+    needs: ci
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node-build
+          path: ./build
+
+      - name: Deploy to QA
+        run: |
+          echo "🚀 Deploying Node.js app to QA environment..."
+          # Example: scp ./build user@qa-server:/var/www/qa-app
+
+  # ------------------------
+  # Deploy to Production (main branch)
+  # ------------------------
+  deploy-prod:
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node-build
+          path: ./build
+
+      - name: Deploy to Production
+        run: |
+          echo "🚀 Deploying Node.js app to Production environment..."
+          # Example: scp ./build user@prod-server:/var/www/prod-app
