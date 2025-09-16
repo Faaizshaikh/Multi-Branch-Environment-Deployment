@@ -55,9 +55,7 @@ jobs:
           path: ./build
 
       - name: Deploy to QA
-        run: |
-          echo "🚀 Deploying Node.js app to QA environment..."
-          # Example: scp ./build user@qa-server:/var/www/qa-app
+        run: echo "🚀 Deploying Node.js app to QA environment..."
 
   # ------------------------
   # Deploy to Production (main branch)
@@ -74,6 +72,4 @@ jobs:
           path: ./build
 
       - name: Deploy to Production
-        run: |
-          echo "🚀 Deploying Node.js app to Production environment..."
-          # Example: scp ./build user@prod-server:/var/www/prod-app
+        run: echo "🚀 Deploying Node.js app to Production environment..."
