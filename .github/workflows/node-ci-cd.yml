@@ -1,20 +1,17 @@
-name: Node.js CI/CD Pipeline
+name: Node.js CI
 
 on:
+  pull_request:
   push:
     branches:
       - main
       - dev
-  pull_request:
 
 jobs:
-  # ------------------------
-  # CI Job (Lint + Test + Build)
-  # ------------------------
   ci:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -32,44 +29,12 @@ jobs:
         run: npm test
 
       - name: Build Project
+        if: github.event_name == 'push' # build only for pushes
         run: npm run build
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4   # ✅ FIXED
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
         with:
           name: node-build
           path: build/
-  
-  # ------------------------
-  # Deploy to QA (dev branch)
-  # ------------------------
-  deploy-qa:
-    needs: ci
-    if: github.ref == 'refs/heads/dev'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4   # ✅ FIXED
-        with:
-          name: node-build
-          path: ./build
-
-      - name: Deploy to QA
-        run: echo "🚀 Deploying Node.js app to QA environment..."
-
-  # ------------------------
-  # Deploy to Production (main branch)
-  # ------------------------
-  deploy-prod:
-    needs: ci
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4   # ✅ FIXED
-        with:
-          name: node-build
-          path: ./build
-
-      - name: Deploy to Production
-        run: echo "🚀 Deploying Node.js app to Production environment..."
