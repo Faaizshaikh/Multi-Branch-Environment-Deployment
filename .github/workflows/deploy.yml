@@ -1,0 +1,29 @@
+name: Node.js Deployment
+
+on:
+  workflow_run:
+    workflows: ["Node.js CI"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: node-build
+          path: ./build
+
+      - name: Deploy to QA
+        if: github.event.workflow_run.head_branch == 'dev'
+        run: echo "🚀 Deploying Node.js app to QA environment..."
+
+      - name: Deploy to Production
+        if: github.event.workflow_run.head_branch == 'main'
+        run: echo "🚀 Deploying Node.js app to Production environment..."
